@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Franco Magia Arcade</title>
+<meta name="description" content="Todos los juegos de Franco: la aventura Franco Magia, juegos 3D, la Compu Gamer y minijuegos. Gratis, en el navegador.">
+<meta name="theme-color" content="#14122b">
+<link rel="icon" type="image/png" href="img/icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@600;800&display=swap">
+<style>
+/* layout: cabecera tipo marquesina de arcade, filtros, grilla de cartuchos */
+:root{
+  --bg:#14122b; --bg2:#1d1a3d; --card:#24204a; --line:#3a3570; --fg:#f2f0ff; --muted:#b4aedc;
+  --gold:#ffd23f; --red:#e8414f; --blue:#2f6bff; --green:#2fbf71; --purple:#8a4fe0;
+  --pixel:"Press Start 2P",ui-monospace,monospace; --body:"Nunito",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px;
+  background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.06) 1px,transparent 0);background-size:22px 22px}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+header{padding-top:28px;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.volver{font-family:var(--pixel);font-size:10px;color:var(--muted);text-decoration:none}
+.volver:hover{color:var(--gold)}
+h1{font-family:var(--pixel);font-size:clamp(20px,4.6vw,40px);line-height:1.35;margin:0;color:var(--gold);text-shadow:4px 4px 0 #000;text-wrap:balance}
+h1 span{color:var(--fg)}
+.sub{margin:0;color:var(--muted);font-size:17px;max-width:62ch;line-height:1.5}
+.stats{font-family:var(--pixel);font-size:10px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
+.stats b{color:var(--gold);font-weight:400}
+
+/* destacado */
+.hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:0;background:var(--card);border:4px solid #000;box-shadow:6px 6px 0 #000;overflow:hidden;text-decoration:none}
+.hero img{width:100%;height:100%;object-fit:cover;image-rendering:pixelated;display:block;min-height:220px}
+.hero .info{padding:24px;display:flex;flex-direction:column;gap:12px;justify-content:center}
+.tag{font-family:var(--pixel);font-size:9px;color:#000;background:var(--gold);padding:6px 8px;align-self:flex-start}
+.hero h2{font-family:var(--pixel);font-size:clamp(16px,2.6vw,24px);margin:0;line-height:1.4}
+.hero p{margin:0;color:var(--muted);line-height:1.5}
+.btn{font-family:var(--pixel);font-size:12px;background:var(--green);color:#fff;border:3px solid #000;box-shadow:0 4px 0 #000;padding:14px 18px;align-self:flex-start;text-decoration:none}
+.hero:hover .btn,.btn:focus-visible{background:#38d684}
+@media (max-width:720px){.hero{grid-template-columns:1fr}}
+
+/* filtros */
+.filtros{display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.chip{font-family:var(--pixel);font-size:9px;background:var(--bg2);color:var(--fg);border:2px solid var(--line);padding:10px 12px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--gold);color:#000;border-color:#000}
+.chip:focus-visible,.card:focus-visible,#buscar:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+#buscar{flex:1 1 200px;min-width:0;font-family:var(--body);font-size:16px;font-weight:700;background:var(--bg2);color:var(--fg);border:2px solid var(--line);padding:10px 12px}
+#buscar::placeholder{color:var(--muted)}
+
+/* secciones y tarjetas */
+section{display:flex;flex-direction:column;gap:14px}
+section[hidden],.card[hidden]{display:none!important}
+.sec-t{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+h3{font-family:var(--pixel);font-size:14px;margin:0;line-height:1.5}
+.sec-t small{color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.card{display:flex;flex-direction:column;background:var(--card);border:3px solid #000;box-shadow:4px 4px 0 #000;text-decoration:none;transition:transform .12s ease}
+.card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #000}
+.card .pic{aspect-ratio:16/10;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;max-width:100%}
+.card .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.card .pic.pix img{object-fit:contain;image-rendering:pixelated;padding:6px}
+.card .txt{padding:12px;display:flex;flex-direction:column;gap:6px;flex:1}
+.card b{font-family:var(--pixel);font-size:10px;line-height:1.6}
+.card span{color:var(--muted);font-size:14px;line-height:1.4}
+.card .tipo{font-family:var(--pixel);font-size:8px;color:var(--gold);margin-top:auto}
+.vacio{color:var(--muted)}
+footer{color:var(--muted);font-size:14px;line-height:1.6;border-top:2px solid var(--line);padding-top:18px}
+@media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="top"><a class="volver" href="/">← FRANCOSANDES.COM</a></div>
+    <h1>FRANCO MAGIA <span>ARCADE</span></h1>
+    <p class="sub">Todos mis juegos en un solo lugar: la aventura Franco Magia, los juegos 3D, la Compu Gamer y los minijuegos. Son gratis y se juegan acá mismo, en la compu o en el celu.</p>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <a class="hero" href="franco-magia/">
+    <img src="img/franco-magia.jpg" alt="Franco saltando en el primer nivel de Franco Magia">
+    <div class="info">
+      <span class="tag">LA AVENTURA COMPLETA</span>
+      <h2>FRANCO MAGIA</h2>
+      <p>El juego principal: niveles, zombis, la casa de Franco, la tienda y todos los minijuegos adentro. Tu progreso se guarda solo en tu aparato.</p>
+      <span class="btn">▶ JUGAR</span>
+    </div>
+  </a>
+
+  <div class="filtros" role="toolbar" aria-label="Filtrar juegos">
+    <button class="chip" type="button" id="f-todos" data-f="todos" aria-pressed="true">TODOS</button>
+    <button class="chip" type="button" id="f-3d" data-f="3d" aria-pressed="false">3D</button>
+    <button class="chip" type="button" id="f-compu" data-f="compu" aria-pressed="false">COMPU GAMER</button>
+    <button class="chip" type="button" id="f-locos" data-f="locos" aria-pressed="false">JUEGOS LOCOS</button>
+    <button class="chip" type="button" id="f-mini" data-f="mini" aria-pressed="false">MINIJUEGOS</button>
+    <input id="buscar" type="search" placeholder="Buscar un juego..." aria-label="Buscar un juego">
+  </div>
+
+  <div id="secciones"></div>
+
+  <footer>
+    Hecho por Franco · <a href="/">francosandes.com</a> · El progreso de cada juego se guarda en tu navegador, no se manda a ningún lado.
+    Los juegos 3D andan mejor en compu; si van lentos, bajá la calidad en el menú del juego.
+  </footer>
+</div>
+
+<script>
+var SEC=[
+ {id:'3d',t:'JUEGOS 3D',d:'Tercera persona, en 3D de verdad',tipo:'3D',items:[
+  ['frankraft','FRANCO CUBOS','Construí, rompé, crafteá y cuidate de los zombis'],
+  ['zombis','ZOMBIS 3D','Armas, granadas y oleadas de zombis'],
+  ['royale','FRANCO BATALLA','30 jugadores, queda uno solo'],
+  ['parkour','PARKOUR 3D','50 niveles en 5 mundos'],
+  ['laberinto','LABERINTO 3D','40 niveles con fantasmas'],
+  ['carrera','CARRERA 3D','3 pistas y turbos'],
+  ['futauto','FÚTBOL DE AUTOS','2 contra 2, azules contra rojos'],
+  ['salva','SALVA A FRANCO 3D','50 niveles: dibujá para protegerlo'],
+  ['roba','ROBA HUEVOS 3D','11 hábitats, caminadoras y guardianes'],
+  ['mina','MINERO SIMULADOR','Picá, vendé, mascotas y renacé'],
+  ['rompe','ROMPE CUBOS 3D','Flexiones, guantes, auras y cubos gigantes'],
+  ['parque','PARQUE ACUÁTICO','Construí tu parque y vendé tickets'],
+  ['almacen','ALMACÉN 3D','Atendé tu almacén y cobrá'],
+  ['backrooms','BACKROOMS 3D','Cuartos amarillos infinitos'],
+  ['meteoritos','METEORITOS 3D','Esquivá y juntá estrellas'],
+  ['penales','PENALES 3D','Pateá y atajá, tanda de 5'],
+  ['basquet','BÁSQUET 3D','60 segundos para encestar'],
+  ['bolos','BOLOS 3D','10 cuadros, ¡hacé strike!'],
+  ['pesca','PESCA 3D','16 peces, 5 cañas y álbum'],
+  ['piso','PISO LOCO 3D','El piso se cae, 8 jugadores']]},
+ {id:'compu',t:'COMPU GAMER',d:'Los videojuegos de la compu de Franco',tipo:'2D',items:[
+  ['huerta','LA HUERTA DE FRANCO','Plantas raras contra zombis'],
+  ['castillo','DEFENSA DEL CASTILLO','Defendé el castillo de los zombis'],
+  ['coco','COCO CORREDOR','Coco salta y corre'],
+  ['iman','FRANCO IMÁN','Atraé y empujá'],
+  ['frankers','FRANKERS','Creá tu propio juego'],
+  ['pingpong','PING PONG','Contra la compu o de a dos'],
+  ['lluvia','LLUVIA DE MONEDAS','Atrapalas'],
+  ['volador','FRANCO VOLADOR','W o flecha para volar'],
+  ['ladrillos','ROMPE LADRILLOS','Rompelos todos'],
+  ['topo','TOPO GOLPE','¡Rápido!'],
+  ['carrera','CARRERA TURBO','Esquivá los autos'],
+  ['ovni','TIRO AL OVNI','Disparales'],
+  ['serpiente','SERPIENTE','Crece y crece'],
+  ['salto','SALTO AL CIELO','Subí y subí'],
+  ['ritmo','RITMO LOCO','Música'],
+  ['penales','FÚTBOL','Penales y más']]},
+ {id:'locos',t:'JUEGOS LOCOS',d:'Juegos inventados para Franco',tipo:'2D',items:[
+  ['huertavoladora','HUERTA VOLADORA','Atrapalas'],
+  ['gigante','GIGANTE CHIQUITO','Cambiá de tamaño'],
+  ['ascensor','ASCENSOR LOCO','Cada piso algo distinto'],
+  ['cocinazombi','COCINA ZOMBI','Cociná raro'],
+  ['letras','LLUVIA DE LETRAS','Armá palabras'],
+  ['lava','EL PISO ES LAVA','Y hielo'],
+  ['soga','SALTA LA SOGA','Saltá a tiempo'],
+  ['calle','CRUZA LA CALLE','Cuidado con los autos'],
+  ['cuentas','CUENTAS RÁPIDAS','Sumas y restas'],
+  ['colores','COLORES','Mirá y repetí']]},
+ {id:'mini',t:'MINIJUEGOS',d:'Los del menú de minijuegos',tipo:'2D',items:[
+  ['parkour','PARKOUR','+20 niveles'],
+  ['puzzle','ROMPECABEZAS','+10 rompecabezas'],
+  ['puertas','PUERTAS','Encontrá las llaves'],
+  ['casa','LA CASA','Tu casa para cuidar'],
+  ['compras','DE COMPRAS','Explorá el pueblo'],
+  ['restaurante','RESTAURANTE','Cociná para los clientes'],
+  ['globos','GLOBOS','Tocalos'],
+  ['memoria','MEMORIA','Encontrá las parejas'],
+  ['pesca','PESCA','Pescá peces'],
+  ['piano','PIANO','Tocá música'],
+  ['vestir','VESTIR','Vestí a Franco']]}
+];
+var cont=document.getElementById('secciones'), total=0;
+SEC.forEach(function(s){
+  var sec=document.createElement('section'); sec.dataset.cat=s.id;
+  sec.innerHTML='<div class="sec-t"><h3>'+s.t+'</h3><small>'+s.d+' · '+s.items.length+' juegos</small></div>';
+  var g=document.createElement('div'); g.className='grid';
+  s.items.forEach(function(it){
+    total++;
+    var a=document.createElement('a'); a.className='card';
+    a.href= s.id==='3d' ? '3d/?juego='+it[0] : 'franco-magia/?ir='+it[0];
+    a.dataset.buscar=(it[1]+' '+it[2]).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    var img= s.id==='3d' ? 'img/3d_'+it[0]+'.jpg' : 'img/2d_'+it[0]+'.png';
+    a.innerHTML='<div class="pic'+(s.id==='3d'?'':' pix')+'"><img loading="lazy" src="'+img+'" alt=""></div>'+
+      '<div class="txt"><b>'+it[1]+'</b><span>'+it[2]+'</span><em class="tipo">'+s.tipo+' · '+s.t+'</em></div>';
+    g.appendChild(a);
+  });
+  sec.appendChild(g); cont.appendChild(sec);
+});
+document.getElementById('stats').innerHTML='<span><b>'+(total+1)+'</b> JUEGOS</span><span><b>'+SEC[0].items.length+'</b> EN 3D</span><span><b>GRATIS</b></span>';
+var filtro='todos', q='';
+function aplicar(){
+  document.querySelectorAll('#secciones section').forEach(function(sec){
+    var vis=0;
+    sec.querySelectorAll('.card').forEach(function(c){ var ok=!q||c.dataset.buscar.indexOf(q)>=0; c.hidden=!ok; if(ok) vis++; });
+    sec.hidden=(filtro!=='todos'&&sec.dataset.cat!==filtro)||vis===0;
+  });
+}
+document.querySelectorAll('.chip').forEach(function(b){ b.addEventListener('click',function(){
+  filtro=b.dataset.f; document.querySelectorAll('.chip').forEach(function(x){ x.setAttribute('aria-pressed',x===b?'true':'false'); }); aplicar(); }); });
+document.getElementById('buscar').addEventListener('input',function(e){ q=e.target.value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim(); aplicar(); });
+</script>
+</body>
+</html>
